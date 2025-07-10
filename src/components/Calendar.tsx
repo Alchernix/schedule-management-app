@@ -9,48 +9,23 @@ import {
   format,
   addMonths,
 } from "date-fns";
-import { useState } from "react";
+import { useCurrentDateStore } from "../store/currentDateStore";
 
 export default function Calendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  function handleChangeMonth(date: Date) {
-    const today = new Date();
-    if (isSameMonth(today, date)) {
-      setCurrentDate(today);
-    } else {
-      setCurrentDate(date);
-    }
-  }
-
-  function handleChangeDate(date: Date) {
-    setCurrentDate(date);
-  }
-
   return (
     <main className="flex flex-col h-full px-7 pb-3">
-      <CalendarHeader
-        currentDate={currentDate}
-        onChangeMonth={handleChangeMonth}
-      />
+      <CalendarHeader />
       <div className="flex flex-1 flex-col border-2 border-slate-100">
         <CalendarDays />
-        <CalendarCells
-          currentDate={currentDate}
-          onChangeDate={handleChangeDate}
-        />
+        <CalendarCells />
       </div>
     </main>
   );
 }
 
-function CalendarHeader({
-  currentDate,
-  onChangeMonth,
-}: {
-  currentDate: Date;
-  onChangeMonth: (date: Date) => void;
-}) {
+function CalendarHeader() {
+  const currentDate = useCurrentDateStore.use.currentDate();
+  const onChangeMonth = useCurrentDateStore.use.handleChangeMonth();
   return (
     <div className="flex items-center justify-between py-3">
       <Button
@@ -90,13 +65,9 @@ function CalendarDays() {
   );
 }
 
-function CalendarCells({
-  currentDate,
-  onChangeDate,
-}: {
-  currentDate: Date;
-  onChangeDate: (date: Date) => void;
-}) {
+function CalendarCells() {
+  const currentDate = useCurrentDateStore.use.currentDate();
+  const onChangeDate = useCurrentDateStore.use.handleChangeDate();
   const today = new Date();
   const calendarCells: Date[] = [];
   const start = startOfWeek(startOfMonth(currentDate));
