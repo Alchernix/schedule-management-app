@@ -1,14 +1,10 @@
 import { useRef, useState } from "react";
 import { useCurrentDateStore } from "../store/currentDateStore";
 import { useDailyStore } from "../store/dailyStore";
-import type { DailyData } from "../types/types";
+import type { SidebarComponentProps } from "../types/types";
 import { startOfDay } from "date-fns";
 import { addMemo } from "../store/dailyStore";
-
-type SidebarComponentProps = {
-  currentDate: Date;
-  dailyInfo: DailyData;
-};
+import Schedules from "./Schedules";
 
 export default function Sidebar() {
   const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
@@ -20,28 +16,26 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex flex-col h-full border-l-slate-100 border-l-2 px-7 py-5 bg-slate-100 gap-5">
+    <aside className="flex flex-col h-full border-l-slate-100 border-l-2 px-7 py-5 bg-slate-50 gap-5">
       <div className="text-5xl font-bold text-center py-10">
         {currentDate.getMonth()}/{currentDate.getDate()}
       </div>
-      <Memo currentDate={currentDate} dailyInfo={dailyInfo} />
+      <Memo dailyInfo={dailyInfo} />
+      <Schedules dailyInfo={dailyInfo} />
       <div>
-        <div className="flex justify-between items-center">
-          <p>일정</p>
-          <i className="fa-solid fa-plus"></i>
-        </div>
-      </div>
-      <div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center font-bold">
           <p>할일</p>
-          <i className="fa-solid fa-plus"></i>
+          <button className="cursor-pointer">
+            <i className="fa-solid fa-plus"></i>
+          </button>
         </div>
       </div>
     </aside>
   );
 }
 
-function Memo({ currentDate, dailyInfo }: SidebarComponentProps) {
+function Memo({ dailyInfo }: SidebarComponentProps) {
+  const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
   const [isEditing, setIsEditing] = useState(false);
   const memo = useRef<HTMLTextAreaElement>(null);
 
@@ -72,7 +66,7 @@ function Memo({ currentDate, dailyInfo }: SidebarComponentProps) {
   }
 
   return (
-    <div className="flex px-2 py-1 bg-slate-50 border border-white rounded-md h-20">
+    <div className="flex px-2 py-1 border-2 bg-white border-white rounded-md min-h-20">
       {memoContent}
     </div>
   );

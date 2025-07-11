@@ -18,3 +18,7 @@ export type DailyData = {
   schedules: Schedule[];
   todos: Todo[];
 };
+
+export type SidebarComponentProps = {
+  dailyInfo: DailyData;
+};

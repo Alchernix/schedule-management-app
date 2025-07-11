@@ -2,7 +2,7 @@ export default function Header() {
   return (
     <header className="grid grid-cols-3 items-center px-7 py-4 border-b-2 border-slate-100">
       <input
-        className="border border-black rounded-md px-2 py-1 col-start-1 justify-self-start"
+        className="border border-slate-300 rounded-md px-2 py-1 col-start-1 justify-self-start"
         type="text"
         placeholder="검색어 입력..."
       />
