@@ -1,6 +1,7 @@
 import {
   startOfMonth,
   startOfWeek,
+  startOfDay,
   addDays,
   isSunday,
   isSaturday,
@@ -10,6 +11,7 @@ import {
   addMonths,
 } from "date-fns";
 import { useCurrentDateStore } from "../store/currentDateStore";
+import { useDailyStore } from "../store/dailyStore";
 
 export default function Calendar() {
   return (
@@ -66,7 +68,8 @@ function CalendarDays() {
 }
 
 function CalendarCells() {
-  const currentDate = useCurrentDateStore.use.currentDate();
+  const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
+  const dailyEntries = useDailyStore.use.entries();
   const onChangeDate = useCurrentDateStore.use.handleChangeDate();
   const today = new Date();
   const calendarCells: Date[] = [];
@@ -78,7 +81,12 @@ function CalendarCells() {
   return (
     <div className="flex-1 grid grid-cols-7 text-center w-full divide-x-2 divide-y-2 divide-slate-100">
       {calendarCells.map((date) => {
-        let classes = "font-bold hover:bg-blue-50 cursor-pointer";
+        const dailyInfo = dailyEntries[date.toISOString()] ?? {
+          memo: "",
+          schedules: [],
+          todos: [],
+        };
+        let classes = "relative font-bold hover:bg-blue-50 cursor-pointer";
 
         if (isSunday(date)) {
           classes += " text-rose-500";
@@ -108,6 +116,9 @@ function CalendarCells() {
               >
                 {date.getDate()}
               </span>
+              {dailyInfo.memo && (
+                <i className="fa-regular fa-note-sticky absolute bottom-0 right-0 text-slate-400"></i>
+              )}
             </div>
           </div>
         );

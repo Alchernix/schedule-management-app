@@ -2,8 +2,10 @@
 import Header from "./components/Header";
 import Calendar from "./components/Calendar";
 import Sidebar from "./components/Sidebar";
+import { useLoadData } from "./store/dailyStore";
 
 function App() {
+  useLoadData();
   return (
     <div className="flex flex-col h-screen w-screen">
       <Header />
@@ -11,7 +13,7 @@ function App() {
         <div className="flex-1">
           <Calendar />
         </div>
-        <div className="w-xs">
+        <div className="w-50 md:w-xs">
           <Sidebar />
         </div>
       </div>
