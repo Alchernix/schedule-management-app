@@ -1,8 +1,10 @@
 export type Schedule = {
   id: number;
   title: string;
+  color: string;
   description: string | null;
-  time: Date | null;
+  startTime: Date | null;
+  endTime: Date | null;
 };
 
 export type Todo = {

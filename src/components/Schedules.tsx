@@ -10,22 +10,7 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const schedules = dailyInfo.schedules;
 
-  function formAction(formData: FormData) {
-    const title = String(formData.get("title") ?? "");
-    const description = String(formData.get("description") ?? "");
-    const timeString = String(formData.get("time") ?? "");
-    let time: Date | null = null;
-    if (timeString) {
-      time = parse(timeString, "HH:mm", currentDate);
-    }
-
-    const newSchedule: Schedule = {
-      id: Date.now(),
-      title,
-      description,
-      time,
-    };
-
+  function handleDone(newSchedule: Schedule) {
     addSchedule(currentDate, newSchedule);
     setIsModalOpen(false);
   }
@@ -43,7 +28,7 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
           </button>
         </div>
         {schedules.length === 0 && (
-          <p className="text-center text-slate-600">아직 일정이 없어요.</p>
+          <p className="text-center text-slate-600 p-1">아직 일정이 없어요.</p>
         )}
         {schedules.length !== 0 && (
           <ul>
@@ -53,9 +38,12 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
           </ul>
         )}
       </div>
+      {/* 스케줄 생성 시 모달 오픈 */}
       <Modal open={isModalOpen}>
         <ScheduleForm
-          formAction={formAction}
+          formAction={(formData) =>
+            formAction(formData, currentDate, null, handleDone)
+          }
           onClose={() => setIsModalOpen(false)}
         />
       </Modal>
@@ -117,22 +105,7 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
 
-  function formAction(formData: FormData) {
-    const title = String(formData.get("title") ?? "");
-    const description = String(formData.get("description") ?? "");
-    const timeString = String(formData.get("time") ?? "");
-    let time: Date | null = null;
-    if (timeString) {
-      time = parse(timeString, "HH:mm", currentDate);
-    }
-
-    const newSchedule: Schedule = {
-      id: schedule.id,
-      title,
-      description,
-      time,
-    };
-
+  function handleDone(newSchedule: Schedule) {
     editSchedule(currentDate, newSchedule);
     setIsModalOpen(false);
   }
@@ -151,13 +124,23 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
   }
 
   return (
-    <li className="flex justify-between hover:bg-slate-100 relative p-1 rounded-md">
+    <li className="flex items-center gap-2 hover:bg-slate-100 relative p-1 rounded-md">
+      <div
+        className={`w-3 aspect-square rounded-full bg-${schedule.color}`}
+      ></div>
       <div>
         <p>{schedule.title}</p>
+        {schedule.startTime && schedule.endTime && (
+          <p className="text-slate-600 text-xs">
+            {format(schedule.startTime, "h:mm")} -{" "}
+            {format(schedule.endTime, "h:mm a")}
+          </p>
+        )}
       </div>
+
       <button
         ref={button}
-        className="cursor-pointer"
+        className="cursor-pointer ml-auto"
         onClick={() => setIsMenuOpen(true)}
       >
         <i className="fa-solid fa-ellipsis-vertical"></i>
@@ -170,15 +153,30 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
           openModal={openModal}
         />
       )}
+      {/* 스케줄 수정 시 모달 오픈 */}
       {isModalOpen && (
         <Modal open={isModalOpen}>
           <ScheduleForm
-            formAction={formAction}
+            formAction={(formData) =>
+              formAction(formData, currentDate, schedule.id, handleDone)
+            }
             onClose={() => setIsModalOpen(false)}
             defaultValues={{
               title: schedule.title,
+              color: schedule.color,
               description: schedule.description ?? "",
-              time: schedule.time?.toISOString() ?? "",
+              startTime:
+                schedule.startTime instanceof Date
+                  ? schedule.startTime.toISOString()
+                  : typeof schedule.startTime === "string"
+                  ? schedule.startTime
+                  : "",
+              endTime:
+                schedule.endTime instanceof Date
+                  ? schedule.endTime.toISOString()
+                  : typeof schedule.endTime === "string"
+                  ? schedule.endTime
+                  : "",
             }}
           />
         </Modal>
@@ -230,16 +228,26 @@ type ScheduleFormProps = {
   onClose: () => void;
   defaultValues?: {
     title: string;
+    color: string;
     description: string;
-    time: string;
+    startTime: string;
+    endTime: string;
   };
 };
 
 function ScheduleForm({
   formAction,
   onClose,
-  defaultValues = { title: "", description: "", time: "" },
+  defaultValues = {
+    title: "",
+    color: "blue-400",
+    description: "",
+    startTime: "",
+    endTime: "",
+  },
 }: ScheduleFormProps) {
+  const [selectedColor, setSelectedColor] = useState(defaultValues.color);
+
   return (
     <form action={formAction} className="flex flex-col gap-3">
       <Input
@@ -255,12 +263,44 @@ function ScheduleForm({
         type="textarea"
         defaultValue={defaultValues.description}
       />
-      <Input
-        id="time"
-        label="시간"
-        type="time"
-        defaultValue={defaultValues.time}
-      />
+      <div className="flex items-center justify-between">
+        <Input
+          id="startTime"
+          label="시간"
+          type="time"
+          defaultValue={defaultValues.startTime}
+        />
+        <span className="font-bold text-xl mt-7">~</span>
+        <Input
+          id="endTime"
+          label="ㅤ"
+          type="time"
+          defaultValue={defaultValues.endTime}
+        />
+      </div>
+      <div className="flex flex-col gap-3">
+        <p className="font-bold">색깔</p>
+        <div className="px-2 py-1 flex justify-between">
+          {[
+            "blue-400",
+            "yellow-400",
+            "red-400",
+            "violet-400",
+            "emerald-400",
+          ].map((color) => (
+            <button
+              type="button"
+              key={color}
+              className={`w-7 flex justify-center items-center cursor-pointer rounded-full aspect-square bg-${color} text-white`}
+              onClick={() => setSelectedColor(color)}
+            >
+              {selectedColor === color && <i className="fa-solid fa-check"></i>}
+            </button>
+          ))}
+        </div>
+        <input type="hidden" name="color" value={selectedColor} />
+      </div>
+
       <div className="flex gap-5 justify-end mt-5">
         <button
           type="button"
@@ -275,4 +315,36 @@ function ScheduleForm({
       </div>
     </form>
   );
+}
+
+function formAction(
+  formData: FormData,
+  currentDate: Date,
+  existingId: number | null,
+  onDone: (newSchedule: Schedule) => void
+) {
+  const title = String(formData.get("title") ?? "");
+  const color = String(formData.get("color") ?? "blue-400");
+  const description = String(formData.get("description") ?? "");
+  const startTimeString = String(formData.get("startTime") ?? "");
+  let startTime: Date | null = null;
+  if (startTimeString) {
+    startTime = parse(startTimeString, "HH:mm", currentDate);
+  }
+  const endTimeString = String(formData.get("endTime") ?? "");
+  let endTime: Date | null = null;
+  if (endTimeString) {
+    endTime = parse(endTimeString, "HH:mm", currentDate);
+  }
+
+  const newSchedule: Schedule = {
+    id: existingId ?? Date.now(),
+    color,
+    title,
+    description,
+    startTime,
+    endTime,
+  };
+
+  onDone(newSchedule);
 }

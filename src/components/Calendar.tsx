@@ -15,7 +15,7 @@ import { useDailyStore } from "../store/dailyStore";
 
 export default function Calendar() {
   return (
-    <main className="flex flex-col h-full px-7 pb-3">
+    <main className="flex flex-col h-full px-7 pb-2">
       <CalendarHeader />
       <div className="flex flex-1 flex-col border-2 border-slate-100">
         <CalendarDays />
@@ -79,7 +79,7 @@ function CalendarCells() {
   }
 
   return (
-    <div className="flex-1 grid grid-cols-7 text-center w-full divide-x-2 divide-y-2 divide-slate-100">
+    <div className="flex-1 grid grid-cols-7 auto-rows-fr text-center w-full divide-x-2 divide-y-2 divide-slate-100">
       {calendarCells.map((date) => {
         const dailyInfo = dailyEntries[date.toISOString()] ?? {
           memo: "",
@@ -105,17 +105,35 @@ function CalendarCells() {
             onClick={() => onChangeDate(date)}
           >
             <div
-              className={!isSameMonth(currentDate, date) ? "opacity-25" : ""}
+              className={`px-1 py-0.5 ${
+                !isSameMonth(currentDate, date) ? "opacity-25" : ""
+              }`}
             >
               <span
-                className={
+                className={`px-0.5 ${
                   isSameDay(today, date)
                     ? "bg-blue-400 text-white rounded-sm"
                     : ""
-                }
+                }`}
               >
                 {date.getDate()}
               </span>
+              <div className="flex flex-col gap-0.5 mt-0.5">
+                {dailyInfo.schedules.slice(0, 2).map((schedule) => (
+                  <p
+                    key={schedule.id}
+                    className={`text-sm font-normal text-white bg-${schedule.color} rounded-sm truncate`}
+                  >
+                    {schedule.title}
+                  </p>
+                ))}
+                {dailyInfo.schedules.length >= 2 && (
+                  <p className="text-xs font-normal text-slate-800">
+                    +{dailyInfo.schedules.length - 2}
+                  </p>
+                )}
+              </div>
+
               {dailyInfo.memo && (
                 <i className="fa-regular fa-note-sticky absolute bottom-0 right-0 text-slate-400"></i>
               )}
