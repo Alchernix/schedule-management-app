@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type { DailyData, Schedule } from "../types/types";
+import type { DailyData, Schedule, Todo } from "../types/types";
 import createSelectors from "./createSelectors";
 import { save, load } from "../utils";
 import { useEffect } from "react";
@@ -12,6 +12,9 @@ type DailyStore = {
   addSchedule: (date: Date, schedule: Schedule) => void;
   editSchedule: (date: Date, newSchedule: Schedule) => void;
   deleteSchedule: (date: Date, id: number) => void;
+  addTodo: (date: Date, todo: Todo) => void;
+  editTodo: (date: Date, newTodo: Todo) => void;
+  deleteTodo: (date: Date, id: number) => void;
 };
 
 const useDailyStoreBase = create<DailyStore>()(
@@ -49,6 +52,28 @@ const useDailyStoreBase = create<DailyStore>()(
         );
         state.entries[dateString].schedules.splice(idx, 1);
       }),
+    addTodo: (date, todo) =>
+      set((state) => {
+        const dateString = date.toISOString();
+        state.entries[dateString] ||= { memo: "", schedules: [], todos: [] };
+        state.entries[dateString].todos.push(todo);
+      }),
+    editTodo: (date, newTodo) =>
+      set((state) => {
+        const dateString = date.toISOString();
+        const idx = state.entries[dateString].todos.findIndex(
+          (s) => s.id === newTodo.id
+        );
+        state.entries[dateString].todos[idx] = newTodo;
+      }),
+    deleteTodo: (date, id) =>
+      set((state) => {
+        const dateString = date.toISOString();
+        const idx = state.entries[dateString].todos.findIndex(
+          (s) => s.id === id
+        );
+        state.entries[dateString].todos.splice(idx, 1);
+      }),
   }))
 );
 
@@ -83,5 +108,23 @@ export function editSchedule(data: Date, newSchedule: Schedule) {
 export function deleteSchedule(data: Date, id: number) {
   const { deleteSchedule } = useDailyStore.getState();
   deleteSchedule(data, id);
+  save();
+}
+
+export function addTodo(data: Date, content: Todo) {
+  const { addTodo } = useDailyStore.getState();
+  addTodo(data, content);
+  save();
+}
+
+export function editTodo(data: Date, newTodo: Todo) {
+  const { editTodo } = useDailyStore.getState();
+  editTodo(data, newTodo);
+  save();
+}
+
+export function deleteTodo(data: Date, id: number) {
+  const { deleteTodo } = useDailyStore.getState();
+  deleteTodo(data, id);
   save();
 }

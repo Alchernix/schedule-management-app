@@ -1,9 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import Modal from "./Modal";
 import { useCurrentDateStore } from "../store/currentDateStore";
 import type { SidebarComponentProps, Schedule } from "../types/types";
-import { addSchedule, editSchedule, deleteSchedule } from "../store/dailyStore";
+import { addSchedule, editSchedule } from "../store/dailyStore";
 import { parse, startOfDay, format } from "date-fns";
+import Input from "./Input";
+import Menu from "./Menu";
 
 export default function Schedules({ dailyInfo }: SidebarComponentProps) {
   const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
@@ -28,7 +30,7 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
           </button>
         </div>
         {schedules.length === 0 && (
-          <p className="text-center text-slate-600 p-1">아직 일정이 없어요.</p>
+          <p className="text-center text-slate-500 p-1">아직 일정이 없어요.</p>
         )}
         {schedules.length !== 0 && (
           <ul>
@@ -48,53 +50,6 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
         />
       </Modal>
     </>
-  );
-}
-
-type InputProps = {
-  id: string;
-  label: string;
-  type: string;
-  required?: boolean;
-  defaultValue?: string;
-};
-
-function Input({
-  id,
-  label,
-  type,
-  required = false,
-  defaultValue = "",
-}: InputProps) {
-  return (
-    <div className="flex flex-col gap-3">
-      <label className="font-bold" htmlFor={id}>
-        {label}
-      </label>
-      {type !== "textarea" && (
-        <input
-          className="border border-slate-300 rounded-md px-2 py-1"
-          id={id}
-          name={id}
-          type={type}
-          required={required}
-          defaultValue={
-            type === "time" && defaultValue
-              ? format(defaultValue, "HH:mm")
-              : defaultValue
-          }
-        />
-      )}
-      {type === "textarea" && (
-        <textarea
-          className="border border-slate-300 rounded-md resize-none px-2 py-1"
-          id={id}
-          name={id}
-          required={required}
-          defaultValue={defaultValue}
-        ></textarea>
-      )}
-    </div>
   );
 }
 
@@ -131,7 +86,7 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
       <div>
         <p>{schedule.title}</p>
         {schedule.startTime && schedule.endTime && (
-          <p className="text-slate-600 text-xs">
+          <p className="text-slate-500 text-xs">
             {format(schedule.startTime, "h:mm")} -{" "}
             {format(schedule.endTime, "h:mm a")}
           </p>
@@ -149,7 +104,7 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
         <Menu
           ref={menu}
           onClickOutside={onClickOutside}
-          schedule={schedule}
+          content={schedule}
           openModal={openModal}
         />
       )}
@@ -182,44 +137,6 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
         </Modal>
       )}
     </li>
-  );
-}
-
-type MenuProps = {
-  ref: React.Ref<HTMLDivElement>;
-  onClickOutside: (e: MouseEvent) => void;
-  schedule: Schedule;
-  openModal: () => void;
-};
-
-function Menu({ ref, onClickOutside, schedule, openModal }: MenuProps) {
-  const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
-
-  useEffect(() => {
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, [onClickOutside]);
-
-  return (
-    <>
-      <div
-        ref={ref}
-        className="bg-slate-100 z-10 w-[100px] flex flex-col gap-2 p-1 absolute top-6 right-1 shadow rounded-md"
-      >
-        <button
-          className="cursor-pointer hover:bg-slate-200 rounded-md"
-          onClick={openModal}
-        >
-          수정
-        </button>
-        <button
-          className="cursor-pointer hover:bg-slate-200 rounded-md"
-          onClick={() => deleteSchedule(currentDate, schedule.id)}
-        >
-          삭제
-        </button>
-      </div>
-    </>
   );
 }
 

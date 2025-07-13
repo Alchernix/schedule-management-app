@@ -7,13 +7,13 @@ import { useLoadData } from "./store/dailyStore";
 function App() {
   useLoadData();
   return (
-    <div className="flex flex-col h-screen w-screen">
+    <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <div className="flex-1">
           <Calendar />
         </div>
-        <div className="w-50 md:w-xs">
+        <div className="w-50 md:w-xs h-full overflow-y-auto border-l-2 border-l-slate-100 bg-slate-50">
           <Sidebar />
         </div>
       </div>

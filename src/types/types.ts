@@ -11,8 +11,7 @@ export type Todo = {
   id: number;
   title: string;
   description: string | null;
-  time: Date | null;
-  isDone: Date | null;
+  isDone: boolean;
 };
 
 export type DailyData = {
