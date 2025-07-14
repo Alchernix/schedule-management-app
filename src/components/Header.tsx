@@ -1,12 +1,14 @@
+import { useViewStore } from "../store/ViewStore";
+
 export default function Header() {
   return (
-    <header className="grid grid-cols-3 items-center px-7 py-2.5 border-b-2 border-slate-100">
+    <header className="grid grid-cols-3 items-center px-7 h-13 border-b-2 border-slate-100">
       <input
         className="border border-slate-300 rounded-md px-2 py-1 col-start-1 justify-self-start"
         type="text"
         placeholder="검색어 입력..."
       />
-      <menu className="flex gap-5 col-start-2 justify-self-center">
+      <menu className="h-full flex gap-3 col-start-2 justify-self-center">
         <MenuItem
           label="Month"
           Icon={<i className="fa-solid fa-calendar-days"></i>}
@@ -26,13 +28,21 @@ export default function Header() {
 }
 
 interface MenuItemProps {
-  label: string;
+  label: "Month" | "Week" | "Day";
   Icon: React.ReactNode;
 }
 
 function MenuItem({ label, Icon }: MenuItemProps) {
+  const currentView = useViewStore.use.currentView();
+  const handleChangeView = useViewStore.use.handleChangeView();
+
   return (
-    <li className="flex items-center gap-2 cursor-pointer">
+    <li
+      onClick={() => handleChangeView(label)}
+      className={`flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-2 ${
+        currentView === label ? "border-b-2 border-b-blue-400" : ""
+      }`}
+    >
       {Icon}
       <p>{label}</p>
     </li>

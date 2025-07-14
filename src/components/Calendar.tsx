@@ -7,11 +7,10 @@ import {
   isSaturday,
   isSameMonth,
   isSameDay,
-  format,
-  addMonths,
 } from "date-fns";
 import { useCurrentDateStore } from "../store/currentDateStore";
 import { useDailyStore } from "../store/dailyStore";
+import CalendarHeader from "./CalendarHeader";
 
 export default function Calendar() {
   return (
@@ -22,28 +21,6 @@ export default function Calendar() {
         <CalendarCells />
       </div>
     </main>
-  );
-}
-
-function CalendarHeader() {
-  const currentDate = useCurrentDateStore.use.currentDate();
-  const onChangeMonth = useCurrentDateStore.use.handleChangeMonth();
-  return (
-    <div className="flex items-center justify-between py-3">
-      <Button
-        onClick={() => onChangeMonth(startOfMonth(addMonths(currentDate, -1)))}
-      >
-        <i className="fa-solid fa-chevron-left"></i>
-      </Button>
-      <p className="font-bold text-xl">
-        {format(currentDate, "MMMM")} {currentDate.getFullYear()}
-      </p>
-      <Button
-        onClick={() => onChangeMonth(startOfMonth(addMonths(currentDate, 1)))}
-      >
-        <i className="fa-solid fa-chevron-right"></i>
-      </Button>
-    </div>
   );
 }
 
@@ -161,22 +138,5 @@ function CalendarCells() {
         );
       })}
     </div>
-  );
-}
-
-function Button({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="shadow border-2 border-slate-100 text-slate-700 rounded-full cursor-pointer aspect-square w-7 hover:bg-slate-50"
-    >
-      {children}
-    </button>
   );
 }
