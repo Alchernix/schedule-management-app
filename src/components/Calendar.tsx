@@ -86,7 +86,7 @@ function CalendarCells() {
           schedules: [],
           todos: [],
         };
-        let classes = "relative font-bold hover:bg-blue-50 cursor-pointer";
+        let classes = "relative font-bold cursor-pointer hover:brightness-98";
 
         if (isSunday(date)) {
           classes += " text-rose-500";
@@ -97,6 +97,25 @@ function CalendarCells() {
         if (isSameDay(date, currentDate)) {
           classes += " border border-blue-400";
         }
+        let streakColor = "white";
+        if (dailyInfo.todos.length > 0) {
+          const totalTodos = dailyInfo.todos.length;
+          const doneTodos = dailyInfo.todos.reduce((acc, todo) => {
+            if (todo.isDone) {
+              return acc + 1;
+            } else {
+              return acc;
+            }
+          }, 0);
+          const completeRate = doneTodos / totalTodos;
+          if (completeRate === 1) {
+            streakColor = "emerald-200";
+          } else if (completeRate >= 0.5) {
+            streakColor = "emerald-100";
+          } else if (completeRate > 0) {
+            streakColor = "emerald-50";
+          }
+        }
 
         return (
           <div
@@ -105,7 +124,7 @@ function CalendarCells() {
             onClick={() => onChangeDate(date)}
           >
             <div
-              className={`px-1 py-0.5 ${
+              className={`h-full px-1 py-0.5 bg-${streakColor} ${
                 !isSameMonth(currentDate, date) ? "opacity-25" : ""
               }`}
             >

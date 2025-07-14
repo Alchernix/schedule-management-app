@@ -84,7 +84,9 @@ function TodoComponent({ todo }: { todo: Todo }) {
         className="accent-blue-400"
         checked={todo.isDone}
         type="checkbox"
-        onClick={() => editTodo(currentDate, { ...todo, isDone: !todo.isDone })}
+        onChange={() =>
+          editTodo(currentDate, { ...todo, isDone: !todo.isDone })
+        }
       />
       <div>
         <p className={todo.isDone ? "line-through text-slate-500" : ""}>
