@@ -1,13 +1,44 @@
 // 전체 레이아웃 관리 - 뷰 상태에 따라서 뷰별로 렌더링
+import { useEffect } from "react";
 import Header from "./components/Header";
 import Calendar from "./components/Calendar";
 import Sidebar from "./components/Sidebar";
 import { useLoadData } from "./store/dailyStore";
+import { useCurrentDateStore } from "./store/currentDateStore";
 import { useViewStore } from "./store/ViewStore";
 import WeekView from "./components/WeekView";
+import { addDays } from "date-fns";
 
 function App() {
   const curerntView = useViewStore.use.currentView();
+  const currentDate = useCurrentDateStore.use.currentDate();
+  const handleChangeDate = useCurrentDateStore.use.handleChangeDate();
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      switch (e.key) {
+        case "ArrowLeft":
+          handleChangeDate(addDays(currentDate, -1));
+          break;
+        case "ArrowRight":
+          handleChangeDate(addDays(currentDate, 1));
+          break;
+        case "ArrowUp":
+          handleChangeDate(addDays(currentDate, -7));
+          break;
+        case "ArrowDown":
+          handleChangeDate(addDays(currentDate, 7));
+          break;
+        default:
+          return;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentDate, handleChangeDate]);
 
   useLoadData();
   return (

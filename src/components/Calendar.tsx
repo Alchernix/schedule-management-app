@@ -101,7 +101,7 @@ function CalendarCells() {
             onClick={() => onChangeDate(date)}
           >
             <div
-              className={`h-full px-1 py-0.5 bg-${streakColor} ${
+              className={`h-full px-0.5 py-0.5 bg-${streakColor} ${
                 !isSameMonth(currentDate, date) ? "opacity-25" : ""
               }`}
             >
@@ -123,7 +123,7 @@ function CalendarCells() {
                     {schedule.title}
                   </p>
                 ))}
-                {dailyInfo.schedules.length >= 2 && (
+                {dailyInfo.schedules.length > 2 && (
                   <p className="text-xs font-normal text-slate-800">
                     +{dailyInfo.schedules.length - 2}
                   </p>
