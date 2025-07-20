@@ -1,14 +1,20 @@
 import { useViewStore } from "../store/ViewStore";
+import { useSearchBoxStore } from "../store/Search";
 
 export default function Header() {
+  const handleToggleSearchBoxOpen =
+    useSearchBoxStore.use.handleToggleSearchBoxOpen();
   return (
     <header className="grid grid-cols-3 items-center px-5 md:px-7 h-13 border-b-2 border-slate-100">
-      <input
+      {/* <input
         className="border border-slate-300 rounded-md px-2 py-1 col-start-1 justify-self-start hidden md:block"
         type="text"
         placeholder="검색어 입력..."
-      />
-      <button className="cursor-pointer md:hidden justify-self-start">
+      /> */}
+      <button
+        className="cursor-pointer justify-self-start"
+        onClick={handleToggleSearchBoxOpen}
+      >
         <i className="fa-solid fa-magnifying-glass"></i>
       </button>
       <menu className="h-full flex gap-3 col-start-2 justify-self-center">

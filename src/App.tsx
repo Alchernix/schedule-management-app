@@ -7,17 +7,21 @@ import { useLoadData } from "./store/dailyStore";
 import { useCurrentDateStore } from "./store/currentDateStore";
 import { useViewStore } from "./store/ViewStore";
 import { useMobileSidebarStore } from "./store/Mobile";
+import { useSearchBoxStore } from "./store/Search";
 import WeekView from "./components/WeekView";
 import { addDays } from "date-fns";
+import SearchBox from "./components/SearchBox";
 
 function App() {
   const curerntView = useViewStore.use.currentView();
   const currentDate = useCurrentDateStore.use.currentDate();
   const handleChangeDate = useCurrentDateStore.use.handleChangeDate();
+  const isSearchBoxOpen = useSearchBoxStore.use.isSearchBoxOpen();
 
   // 모바일용
   const isMobileSidebarOpen = useMobileSidebarStore.use.isSidebarOpen();
 
+  // 방향키로 날짜이동
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       switch (e.key) {
@@ -62,6 +66,11 @@ function App() {
       {isMobileSidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden bg-slate-50">
           <Sidebar />
+        </div>
+      )}
+      {isSearchBoxOpen && (
+        <div className="fixed top-0 left-0 bg-slate-50 h-full w-full md:w-2xs">
+          <SearchBox />
         </div>
       )}
     </>
