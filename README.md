@@ -1,69 +1,41 @@
-# React + TypeScript + Vite
+# 🗓️ schedule-management-app
+내가 쓸 기능만 넣어 만든 일정 관리 웹앱
+## 🔗 배포 링크
+https://alchernix.github.io/schedule-management-app/
+## 🛠 사용 기술
+* React
+* TypeScript
+* Tailwind CSS
+* Zustand (상태 관리)
+* Vite (개발 환경 및 번들러)
+## 📌 주요 기능
+<img width="1919" height="904" alt="Image" src="https://github.com/user-attachments/assets/04692cb8-5374-4b9b-ab7a-d75ea8663c3c" />
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* **캘린더 뷰**   
+  월별 뷰에서는 날짜별로, 주별 뷰에서는 시간대별로 일정 확인 가능   
+  월별/주별 뷰는 상단 바에서 변경 가능
+  달력의 버튼을 통해서 월 변경 가능
+* **메모 기능**   
+  각 날짜별로 메모 등록 가능   
+  메모가 등록된 날은 각 날짜의 우측 하단에 메모 표시가 붙은 것으로 확인 가능
+* **일정/할일 기능**    
+  각 날짜별로 일정/할일 등록/수정/삭제 가능
+  * 일정의 경우, 캘린더에 표시되며(색깔 지정 가능) 시간을 정할 수 있음
+  * 할일의 경우, 캘린더에 따로 표시되지 않으며 완료/미완료 표시 가능
+* **할일 스트릭 기능**   
+  할일 완료율에 따라서 캘린더 색상 변화
+* **검색 기능**   
+  좌측 상단의 돋보기 버튼으로 검색 가능   
+  메모/일정/할일 제목으로 검색 가능하며, 검색 결과를 누를 시 해당 날짜로 이동
+* **저장 기능**   
+  회원가입 없이 로컬스토리지를 이용한 데이터 저장
+* **반응형 UI**   
+  PC와 모바일에서 UI가 다름(사이드바, 검색창)   
+  기본적으로 PC최적화지만, 모바일에서도 문제없이 사용가능
+## 🚀Todo
+* API로 공휴일 데이터 불러오기
+* 설정 기능(커스터마이징?)
+* 일정/할일 반복설정
+* 입력/수정 폼 시각적 피드백
+* 드래그 앤 드롭
+* etc...
