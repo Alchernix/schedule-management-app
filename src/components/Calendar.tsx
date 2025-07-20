@@ -15,7 +15,7 @@ import CalendarHeader from "./CalendarHeader";
 
 export default function Calendar() {
   return (
-    <main className="flex flex-col h-full px-7 pb-2">
+    <main className="flex flex-col h-full px-2 pb-2 md:px-7">
       <CalendarHeader />
       <div className="flex flex-1 flex-col border-2 border-slate-100">
         <CalendarDays />

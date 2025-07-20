@@ -24,10 +24,10 @@ export default function WeekView() {
   }
 
   return (
-    <main className="flex flex-col h-full px-7 pb-2 overflow-y-scroll">
+    <main className="flex flex-col h-full px-2 md:px-7 pb-2 overflow-y-scroll">
       <CalendarHeader />
       <div className="flex flex-1 flex-col border-2 border-slate-100">
-        <div className="grid [grid-template-columns:0.3fr_repeat(7,_1fr)] text-center divide-x-2 divide-slate-100 border-b-2 border-b-slate-100">
+        <div className="grid [grid-template-columns:0.3fr_repeat(7,_minmax(0,_1fr))] text-center divide-x-2 divide-slate-100 border-b-2 border-b-slate-100">
           <TimeRow times={times} />
           {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => {
             const date = days[idx];
@@ -71,7 +71,7 @@ function DayRow({ times, day, date }: DayRowsProps) {
     useMobileSidebarStore.use.handleToggleSidebarOpen();
 
   let classes =
-    "font-bold bg-slate-50 flex flex-col items-center justify-center";
+    "font-bold bg-slate-50 flex flex-col items-center justify-center min-w-0";
   if (day === "일") {
     classes += " text-rose-500";
   } else if (day === "토") {
@@ -84,7 +84,7 @@ function DayRow({ times, day, date }: DayRowsProps) {
         onChangeDate(date);
         handleToggleSidebarOpen();
       }}
-      className={`relative grid [grid-template-rows:50px_100px_repeat(24,_50px)] divide-y-2 divide-slate-100 text-center cursor-pointer ${
+      className={`min-w-0 relative grid [grid-template-rows:50px_100px_repeat(24,_50px)] divide-y-2 divide-slate-100 text-center cursor-pointer ${
         isSameDay(date, currentDate) ? "border border-blue-400" : ""
       }`}
     >
@@ -102,7 +102,7 @@ function DayRow({ times, day, date }: DayRowsProps) {
       </div>
       <AllDaySchedules date={date} />
       {times.map((time) => (
-        <div key={time}></div>
+        <div key={time} className="min-w-0"></div>
       ))}
       <TimeSchedules date={date} />
     </div>
@@ -121,13 +121,15 @@ function AllDaySchedules({ date }: { date: Date }) {
   );
 
   return (
-    <div className={"flex flex-col gap-0.5"}>
+    <div className={"flex flex-col gap-0.5 overflow-hidden min-w-0"}>
       {AllDaySchedulules.slice(0, 3).map((schedule) => (
         <div
           key={schedule.id}
-          className={`flex-1 flex justify-center items-center bg-${schedule.color} text-white rounded-sm truncate`}
+          className={`flex-1 flex items-center justify-center bg-${schedule.color} text-white rounded-sm w-full min-w-0`}
         >
-          {schedule.title}
+          <span className="truncate min-w-0 px-1 text-white text-left">
+            {schedule.title}
+          </span>
         </div>
       ))}
       {AllDaySchedulules.length > 3 && (
@@ -181,7 +183,9 @@ function TimeSchedules({ date }: TimeSchedulesProps) {
             )}px`,
           }}
         >
-          {schedule.title}
+          <span className="truncate min-w-0 px-1 text-white text-left">
+            {schedule.title}
+          </span>
         </div>
       ))}
     </>
