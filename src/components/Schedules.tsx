@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useActionState } from "react";
 import Modal from "./Modal";
 import { useCurrentDateStore } from "../store/currentDateStore";
 import type { SidebarComponentProps, Schedule } from "../types/types";
 import { addSchedule, editSchedule } from "../store/dailyStore";
-import { parse, startOfDay, format } from "date-fns";
+import { parse, startOfDay, format, isBefore } from "date-fns";
 import Input from "./Input";
 import Menu from "./Menu";
 
@@ -11,6 +11,20 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
   const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const schedules = dailyInfo.schedules;
+
+  const boundAction = (prevState: formActionStateType, formData: FormData) =>
+    formAction(prevState, formData, currentDate, null, handleDone);
+
+  const [formState, newFormActon] = useActionState(boundAction, {
+    errors: null,
+    values: {
+      title: "",
+      color: "",
+      description: "",
+      startTime: null,
+      endTime: null,
+    },
+  });
 
   function handleDone(newSchedule: Schedule) {
     addSchedule(currentDate, newSchedule);
@@ -43,9 +57,8 @@ export default function Schedules({ dailyInfo }: SidebarComponentProps) {
       {/* 스케줄 생성 시 모달 오픈 */}
       <Modal open={isModalOpen}>
         <ScheduleForm
-          formAction={(formData) =>
-            formAction(formData, currentDate, null, handleDone)
-          }
+          formState={formState}
+          formAction={newFormActon}
           onClose={() => setIsModalOpen(false)}
         />
       </Modal>
@@ -59,6 +72,20 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
+
+  const boundAction = (prevState: formActionStateType, formData: FormData) =>
+    formAction(prevState, formData, currentDate, null, handleDone);
+
+  const [formState, newFormActon] = useActionState(boundAction, {
+    errors: null,
+    values: {
+      title: "",
+      color: "",
+      description: "",
+      startTime: null,
+      endTime: null,
+    },
+  });
 
   function handleDone(newSchedule: Schedule) {
     editSchedule(currentDate, newSchedule);
@@ -112,9 +139,8 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
       {isModalOpen && (
         <Modal open={isModalOpen}>
           <ScheduleForm
-            formAction={(formData) =>
-              formAction(formData, currentDate, schedule.id, handleDone)
-            }
+            formState={formState}
+            formAction={newFormActon}
             onClose={() => setIsModalOpen(false)}
             defaultValues={{
               title: schedule.title,
@@ -141,6 +167,7 @@ function ScheduleComponent({ schedule }: { schedule: Schedule }) {
 }
 
 type ScheduleFormProps = {
+  formState: formActionStateType;
   formAction: (formData: FormData) => void;
   onClose: () => void;
   defaultValues?: {
@@ -153,6 +180,7 @@ type ScheduleFormProps = {
 };
 
 function ScheduleForm({
+  formState,
   formAction,
   onClose,
   defaultValues = {
@@ -172,29 +200,32 @@ function ScheduleForm({
         label="제목"
         type="text"
         required={true}
-        defaultValue={defaultValues.title}
+        defaultValue={formState.values.title || defaultValues.title}
       />
       <Input
         id="description"
         label="설명"
         type="textarea"
-        defaultValue={defaultValues.description}
+        defaultValue={formState.values.description || defaultValues.description}
       />
       <div className="flex items-center justify-between">
         <Input
           id="startTime"
           label="시간"
           type="time"
-          defaultValue={defaultValues.startTime}
+          defaultValue={formState.values.startTime || defaultValues.startTime}
         />
         <span className="font-bold text-xl mt-7">~</span>
         <Input
           id="endTime"
           label="ㅤ"
           type="time"
-          defaultValue={defaultValues.endTime}
+          defaultValue={formState.values.endTime || defaultValues.endTime}
         />
       </div>
+      {formState.errors && (
+        <div className="text-center text-red-500">{formState.errors[0]}</div>
+      )}
       <div className="flex flex-col gap-3">
         <p className="font-bold">색깔</p>
         <div className="px-2 py-1 flex justify-between">
@@ -234,7 +265,19 @@ function ScheduleForm({
   );
 }
 
+type formActionStateType = {
+  errors: string[] | null;
+  values: {
+    title: string;
+    color: string;
+    description: string;
+    startTime: Date | null;
+    endTime: Date | null;
+  };
+};
+
 function formAction(
+  prevState: formActionStateType,
   formData: FormData,
   currentDate: Date,
   existingId: number | null,
@@ -254,6 +297,27 @@ function formAction(
     endTime = parse(endTimeString, "HH:mm", currentDate);
   }
 
+  const errors = [];
+
+  if ((startTime && !endTime) || (!startTime && endTime)) {
+    errors.push("시작 시각과 완료 시각을 모두 입력해주세요!");
+  } else if (startTime && endTime && !isBefore(startTime, endTime)) {
+    errors.push("완료 시각을 시작 시각보다 뒤로 설정해주세요!");
+  }
+
+  if (errors.length > 0) {
+    return {
+      errors: errors,
+      values: {
+        title,
+        color,
+        description,
+        startTime,
+        endTime,
+      },
+    };
+  }
+
   const newSchedule: Schedule = {
     id: existingId ?? Date.now(),
     color,
@@ -264,4 +328,14 @@ function formAction(
   };
 
   onDone(newSchedule);
+  return {
+    errors: null,
+    values: {
+      title,
+      color,
+      description,
+      startTime,
+      endTime,
+    },
+  };
 }

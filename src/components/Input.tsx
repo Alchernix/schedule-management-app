@@ -6,7 +6,7 @@ type InputProps = {
   label: string;
   type: string;
   required?: boolean;
-  defaultValue?: string;
+  defaultValue?: string | Date;
 };
 
 export default function Input({
