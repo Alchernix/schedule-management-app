@@ -1,5 +1,6 @@
 import { useCurrentDateStore } from "../store/currentDateStore";
 import { useDailyStore } from "../store/dailyStore";
+import { useMobileSidebarStore } from "../store/Mobile";
 import CalendarHeader from "./CalendarHeader";
 import {
   startOfWeek,
@@ -66,6 +67,8 @@ function DayRow({ times, day, date }: DayRowsProps) {
   const currentDate = useCurrentDateStore.use.currentDate();
   const today = new Date();
   const onChangeDate = useCurrentDateStore.use.handleChangeDate();
+  const handleToggleSidebarOpen =
+    useMobileSidebarStore.use.handleToggleSidebarOpen();
 
   let classes =
     "font-bold bg-slate-50 flex flex-col items-center justify-center";
@@ -77,7 +80,10 @@ function DayRow({ times, day, date }: DayRowsProps) {
 
   return (
     <div
-      onClick={() => onChangeDate(date)}
+      onClick={() => {
+        onChangeDate(date);
+        handleToggleSidebarOpen();
+      }}
       className={`relative grid [grid-template-rows:50px_100px_repeat(24,_50px)] divide-y-2 divide-slate-100 text-center cursor-pointer ${
         isSameDay(date, currentDate) ? "border border-blue-400" : ""
       }`}

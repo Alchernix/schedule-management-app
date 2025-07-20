@@ -17,10 +17,10 @@ export default function Header() {
           label="Week"
           Icon={<i className="fa-solid fa-calendar-week"></i>}
         />
-        <MenuItem
+        {/* <MenuItem
           label="Day"
           Icon={<i className="fa-solid fa-calendar-day"></i>}
-        />
+        /> */}
       </menu>
       <i className="col-start-3 justify-self-end fa-solid fa-gear cursor-pointer"></i>
     </header>

@@ -10,6 +10,7 @@ import {
 } from "date-fns";
 import { useCurrentDateStore } from "../store/currentDateStore";
 import { useDailyStore } from "../store/dailyStore";
+import { useMobileSidebarStore } from "../store/Mobile";
 import CalendarHeader from "./CalendarHeader";
 
 export default function Calendar() {
@@ -45,6 +46,10 @@ function CalendarDays() {
 }
 
 function CalendarCells() {
+  // 모바일용
+  const handleToggleSidebarOpen =
+    useMobileSidebarStore.use.handleToggleSidebarOpen();
+
   const currentDate = startOfDay(useCurrentDateStore.use.currentDate());
   const dailyEntries = useDailyStore.use.entries();
   const onChangeDate = useCurrentDateStore.use.handleChangeDate();
@@ -98,7 +103,10 @@ function CalendarCells() {
           <div
             className={classes}
             key={date.toISOString()}
-            onClick={() => onChangeDate(date)}
+            onClick={() => {
+              onChangeDate(date);
+              handleToggleSidebarOpen();
+            }}
           >
             <div
               className={`h-full px-0.5 py-0.5 bg-${streakColor} ${
